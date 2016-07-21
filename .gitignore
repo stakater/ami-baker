@@ -1,0 +1,9 @@
+###############
+cloud-config/cloud-config.yaml
+build
+*.pem
+*.key
+.DS_Store
+.git
+.terraform
+.vagrant
