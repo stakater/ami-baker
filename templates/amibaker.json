@@ -1,0 +1,38 @@
+{
+  "variables": {
+    "aws_access_key": "",
+    "aws_secret_key": "",
+    "aws_region": "",
+    "source_ami": "",
+    "ami_name": "",
+    "instance_type": ""
+  },
+  "builders": [{
+    "type": "amazon-ebs",
+    "access_key": "{{user `aws_access_key`}}",
+    "secret_key": "{{user `aws_secret_key`}}",
+    "region": "{{user `aws_region`}}",
+    "source_ami": "{{user `source_ami`}}",
+    "instance_type": "{{user `instance_type`}}",
+    "ssh_username": "core",
+    "ami_name": "{{user `ami_name`}}"
+  }],
+
+  "provisioners": [{
+    "type":"shell",
+    "inline": [
+      "sudo mkdir -p /cloudinit",
+      "sudo chown -R core:core /cloudinit"
+    ]
+  },{
+    "type": "file",
+    "source": "cloud-config/cloud-config.yaml",
+    "destination": "/cloudinit/cloud-config.yaml"
+    },{
+      "type":"shell",
+      "inline": [
+        "sudo cp -f /cloudinit/cloud-config.yaml /usr/share/oem/cloud-config.yml",
+        "sudo coreos-cloudinit --from-file=/usr/share/oem/cloud-config.yml"
+      ]
+    }]
+}
