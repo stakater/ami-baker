@@ -1,0 +1,1 @@
+Add `ca.crt` file for docker registry in this directory in order to upload it
