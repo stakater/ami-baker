@@ -28,3 +28,8 @@ Docker options used with the docker run command in order to run your application
 
 ###### -i `<Instance Type>` (optional)
 Instance type to be specified in the AMI, it defaults to `t2.medium`
+
+Example: 
+```
+./bake-ami.sh -r us-east-1 -n myAmi -d hello-world
+```
