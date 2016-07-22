@@ -3,11 +3,13 @@
     "aws_region": "",
     "source_ami": "",
     "ami_name": "",
-    "instance_type": ""
+    "instance_type": "",
+    "subnet_id":""
   },
   "builders": [{
     "type": "amazon-ebs",
     "region": "{{user `aws_region`}}",
+    "subnet_id":"{{user `subnet_id`}}",
     "source_ami": "{{user `source_ami`}}",
     "instance_type": "{{user `instance_type`}}",
     "ssh_username": "core",

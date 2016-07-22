@@ -1,16 +1,16 @@
 #!/bin/bash
 AWS_REGION=""
+SUBNET_ID=""
 AMI_NAME=""
 INSTANCE_TYPE=t2.medium # default value
 DOCKER_IMAGE=""
 DOCKER_OPTS=""
-
 # Flags to make sure all options are given
 rOptionFlag=false;
 nOptionFlag=false;
 dOptionFlag=false;
 # Get options from the command line
-while getopts ":r:n:i:d:o:" OPTION
+while getopts ":r:n:i:d:o:s:" OPTION
 do
     case $OPTION in
         r)
@@ -31,15 +31,18 @@ do
         i)
           INSTANCE_TYPE=$OPTARG #optional
           ;;
+        s)
+          SUBNET_ID=$OPTARG
+          ;;
         *)
-          echo "Usage: $(basename $0) -r <AWS region> -n <AMI NAME> -d <DOCKER IMAGE> -o <DOCKER OPTS> (optional) -i <INSTANCE TYPE> (optional)"
+          echo "Usage: $(basename $0) -r <AWS region> -n <AMI NAME> -d <DOCKER IMAGE> -o <DOCKER OPTS> (optional) -s <Subnet_ID> (optional) -i <INSTANCE TYPE> (optional)"
           exit 0
           ;;
     esac
 done
 if ! $rOptionFlag || ! $nOptionFlag || ! $dOptionFlag ;
 then
-  echo "Usage: $(basename $0) -r <AWS region> -n <AMI NAME> -d <DOCKER IMAGE> -o <DOCKER OPTS> (optional) -i <INSTANCE TYPE> (optional)"
+  echo "Usage: $(basename $0) -r <AWS region> -n <AMI NAME> -d <DOCKER IMAGE> -o <DOCKER OPTS> (optional) -s <Subnet_ID> (optional) -i <INSTANCE TYPE> (optional)"
   exit 0;
 fi
 
@@ -71,6 +74,7 @@ fi
 # Run packer
 packer build \
     -var "aws_region=$AWS_REGION" \
+    -var "subnet_id"=$SUBNET_ID \
     -var "source_ami=$AMI_ID" \
     -var "instance_type=$INSTANCE_TYPE" \
     -var "ami_name=$AMI_NAME" \
