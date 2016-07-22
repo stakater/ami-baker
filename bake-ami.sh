@@ -68,15 +68,8 @@ then
   done
 fi
 
-# Fetch AWS credentials from file
-AWS_PROFILE=default
-AWS_ACCESS_KEY=$(scripts/read_cfg.sh $HOME/.aws/credentials $AWS_PROFILE aws_access_key_id)
-AWS_SECRET_KEY=$(scripts/read_cfg.sh $HOME/.aws/credentials $AWS_PROFILE aws_secret_access_key)
-
 # Run packer
 packer build \
-    -var "aws_access_key=$AWS_ACCESS_KEY" \
-    -var "aws_secret_key=$AWS_SECRET_KEY" \
     -var "aws_region=$AWS_REGION" \
     -var "source_ami=$AMI_ID" \
     -var "instance_type=$INSTANCE_TYPE" \
