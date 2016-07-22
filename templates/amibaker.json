@@ -13,9 +13,25 @@
     "subnet_id":"{{user `subnet_id`}}",
     "vpc_id":"{{user `vpc_id`}}",
     "source_ami": "{{user `source_ami`}}",
-    "user_data_file":"cloud-config/cloud-config.yaml",
     "instance_type": "{{user `instance_type`}}",
     "ssh_username": "core",
     "ami_name": "{{user `ami_name`}}"
-  }]
+  }],
+  "provisioners": [{
+    "type":"shell",
+    "inline": [
+      "sudo mkdir -p /cloudinit",
+      "sudo chown -R core:core /cloudinit"
+    ]
+  },{
+    "type": "file",
+    "source": "cloud-config/cloud-config.yaml",
+    "destination": "/cloudinit/cloud-config.yaml"
+    },{
+      "type":"shell",
+      "inline": [
+        "sudo cp -f /cloudinit/cloud-config.yaml /usr/share/oem/cloud-config.yml",
+        "sudo coreos-cloudinit --from-file=/usr/share/oem/cloud-config.yml"
+      ]
+    }]
 }
