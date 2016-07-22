@@ -17,7 +17,6 @@ coreos:
   units:
     - name: etcd2.service
       command: start
-      # TODO: Add drop-ins here, environment file of initial cluster
     - name: fleet.service
       command: start
     - name: application.service
