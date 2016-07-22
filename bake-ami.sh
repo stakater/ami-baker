@@ -11,7 +11,7 @@ rOptionFlag=false;
 nOptionFlag=false;
 dOptionFlag=false;
 # Get options from the command line
-while getopts ":r:n:i:d:o:s:v:" OPTION
+while getopts ":r:n:d:o:i:s:v:" OPTION
 do
     case $OPTION in
         r)
@@ -35,7 +35,7 @@ do
         s)
           SUBNET_ID=$OPTARG
           ;;
-        s)
+        v)
           VPC_ID=$OPTARG
           ;;
         *)
