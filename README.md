@@ -11,19 +11,20 @@ If you're using it else where, expose credential details as environmental variab
 
 ### How to run
 To build your Core OS based AMI, you need to run the scrip `bake-ami.sh`.
+
 The parameters for the script are as follows:
 
-###### -r <AWS Region> (required)
+###### -r `<AWS Region>` (required)
 The AWS region in which the AMI is to be created.
 
-###### -n <Name of the AMI> (required)
+###### -n `<Name of the AMI>` (required)
 The name of the AMI to be created.
 
-###### -d <Name of the Docker image> (required)
+###### -d `<Name of the Docker image>` (required)
 Name of the docker image of your application which will be used to create a systemd unit, in order to run your application on Core OS.
 
-###### -o <Docker options> (optional)
+###### -o `<Docker options>` (optional)
 Docker options used with the docker run command in order to run your application.
 
-###### -i <Instance Type> (optional)
+###### -i `<Instance Type>` (optional)
 Instance type to be specified in the AMI, it defaults to `t2.medium`
