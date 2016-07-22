@@ -11,7 +11,7 @@ Please refer to the given link for details.
 
 
 ### How to run
-To build your Core OS based AMI, you need to run the scrip `bake-ami.sh`.
+To build your Core OS based AMI, you need to run the script `bake-ami.sh`.
 
 The parameters for the script are as follows:
 
