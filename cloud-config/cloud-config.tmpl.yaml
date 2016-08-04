@@ -32,7 +32,6 @@ coreos:
         ExecStartPre=/usr/bin/docker pull <#DOCKER_IMAGE#>
         ExecStart=/usr/bin/docker run --rm --name %n <#DOCKER_OPTS#> <#DOCKER_IMAGE#>
         ExecStop=/usr/bin/docker stop %n
-        RestartSec=1
-        Restart=always
+
         [Install]
         WantedBy=multi-user.target
