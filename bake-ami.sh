@@ -88,4 +88,4 @@ packer build \
     -var "instance_type=$INSTANCE_TYPE" \
     -var "ami_name=$AMI_NAME" \
     -var "docker_registry_crts_dir=$DOCKER_REGISTRY_CRTS_DIR" \
-    templates/amibaker.json
+    templates/amibaker.json 2>&1 | sudo tee output.txt
