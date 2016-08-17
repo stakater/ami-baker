@@ -6,7 +6,8 @@
     "instance_type": "",
     "subnet_id":"",
     "vpc_id":"",
-    "docker_registry_crts_dir":""
+    "docker_registry_crts_dir":"",
+    "build_uuid":""
   },
   "builders": [{
     "type": "amazon-ebs",
@@ -16,7 +17,10 @@
     "source_ami": "{{user `source_ami`}}",
     "instance_type": "{{user `instance_type`}}",
     "ssh_username": "core",
-    "ami_name": "{{user `ami_name`}}"
+    "ami_name": "{{user `ami_name`}}",
+    "tags": {
+      "BuildUUID": "{{user `build_uuid`}}"
+    }
   }],
 
   "provisioners": [{

@@ -7,12 +7,14 @@ INSTANCE_TYPE=t2.medium # default value
 DOCKER_IMAGE=""
 DOCKER_OPTS=""
 DOCKER_REGISTRY_DIR=""
+BUILD_UUID=""
 # Flags to make sure all options are given
 rOptionFlag=false;
 nOptionFlag=false;
 dOptionFlag=false;
+bOptionFlag=false;
 # Get options from the command line
-while getopts ":r:n:d:o:i:s:v:g:" OPTION
+while getopts ":r:n:d:o:i:s:v:g:b:" OPTION
 do
     case $OPTION in
         r)
@@ -42,15 +44,19 @@ do
         g)
           DOCKER_REGISTRY_CRTS_DIR=$OPTARG
           ;;
+        b)
+          bOptionFlag=true
+          BUILD_UUID=$OPTARG
+          ;;
         *)
-          echo "Usage: $(basename $0) -r <AWS region> -n <AMI NAME> -d <DOCKER IMAGE> -o <DOCKER OPTS> (optional) -s <Subnet ID> (optional) -v <VPC ID> (optional) -i <INSTANCE TYPE> (optional) -g <Docker registry certificates directory path> (optional)"
+          echo "Usage: $(basename $0) -r <AWS region> -n <AMI NAME> -d <DOCKER IMAGE> -o <DOCKER OPTS> (optional) -b <Build UUID> -s <Subnet ID> (optional) -v <VPC ID> (optional) -i <INSTANCE TYPE> (optional) -g <Docker registry certificates directory path> (optional)"
           exit 0
           ;;
     esac
 done
-if ! $rOptionFlag || ! $nOptionFlag || ! $dOptionFlag ;
+if ! $rOptionFlag || ! $nOptionFlag || ! $dOptionFlag || ! $bOptionFlag ;
 then
-  echo "Usage: $(basename $0) -r <AWS region> -n <AMI NAME> -d <DOCKER IMAGE> -o <DOCKER OPTS> (optional) -s <Subnet_ID> (optional) -v <VPC ID> (optional) -i <INSTANCE TYPE> (optional) -g <Docker registry certificates directory path> (optional)"
+  echo "Usage: $(basename $0) -r <AWS region> -n <AMI NAME> -d <DOCKER IMAGE> -o <DOCKER OPTS> (optional) -b <Build UUID> -s <Subnet_ID> (optional) -v <VPC ID> (optional) -i <INSTANCE TYPE> (optional) -g <Docker registry certificates directory path> (optional)"
   exit 0;
 fi
 
@@ -88,4 +94,5 @@ packer build \
     -var "instance_type=$INSTANCE_TYPE" \
     -var "ami_name=$AMI_NAME" \
     -var "docker_registry_crts_dir=$DOCKER_REGISTRY_CRTS_DIR" \
+    -var "build_uuid=$BUILD_UUID"
     templates/amibaker.json 2>&1 | sudo tee output.txt
