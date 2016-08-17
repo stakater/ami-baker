@@ -94,5 +94,5 @@ packer build \
     -var "instance_type=$INSTANCE_TYPE" \
     -var "ami_name=$AMI_NAME" \
     -var "docker_registry_crts_dir=$DOCKER_REGISTRY_CRTS_DIR" \
-    -var "build_uuid=$BUILD_UUID"
+    -var "build_uuid=$BUILD_UUID" \
     templates/amibaker.json 2>&1 | sudo tee output.txt
