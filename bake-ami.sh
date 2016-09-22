@@ -61,7 +61,7 @@ then
 fi
 
 # Fetch core-os ami id
-COREOS_UPDATE_CHANNEL=beta;
+COREOS_UPDATE_CHANNEL=stable;
 VM_TYPE=hvm;
 url=`printf "http://%s.release.core-os.net/amd64-usr/current/coreos_production_ami_%s_%s.txt" $COREOS_UPDATE_CHANNEL $VM_TYPE $AWS_REGION`
 
