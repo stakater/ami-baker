@@ -7,7 +7,8 @@
     "subnet_id":"",
     "vpc_id":"",
     "docker_registry_crts_dir":"",
-    "build_uuid":""
+    "build_uuid":"",
+    "cloud_config_file":""
   },
   "builders": [{
     "type": "amazon-ebs",
@@ -41,7 +42,7 @@
     ]
   },{
     "type": "file",
-    "source": "cloud-config/cloud-config.yaml",
+    "source": "{{user `cloud_config_file`}}",
     "destination": "/baker-data/cloud-config.yaml"
   },{
     "type":"shell",

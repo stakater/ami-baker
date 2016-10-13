@@ -8,13 +8,15 @@ DOCKER_IMAGE=""
 DOCKER_OPTS=""
 DOCKER_REGISTRY_DIR=""
 BUILD_UUID=""
+CLOUD_CONFIG_TMPL=""
 # Flags to make sure all options are given
 rOptionFlag=false;
 nOptionFlag=false;
 dOptionFlag=false;
 bOptionFlag=false;
+cOptionFlag=false;
 # Get options from the command line
-while getopts ":r:n:d:o:i:s:v:g:b:" OPTION
+while getopts ":r:n:d:o:i:s:v:g:b:c:" OPTION
 do
     case $OPTION in
         r)
@@ -48,15 +50,19 @@ do
           bOptionFlag=true
           BUILD_UUID=$OPTARG
           ;;
+        c)
+          cOptionFlag=true
+          CLOUD_CONFIG_TMPL=$OPTARG
+          ;;
         *)
-          echo "Usage: $(basename $0) -r <AWS region> -n <AMI NAME> -d <DOCKER IMAGE> -o <DOCKER OPTS> (optional) -b <Build UUID> -s <Subnet ID> (optional) -v <VPC ID> (optional) -i <INSTANCE TYPE> (optional) -g <Docker registry certificates directory path> (optional)"
+          echo "Usage: $(basename $0) -r <AWS region> -n <AMI NAME> -c <Cloud config template file path> -d <DOCKER IMAGE> -o <DOCKER OPTS> (optional) -b <Build UUID> -s <Subnet ID> (optional) -v <VPC ID> (optional) -i <INSTANCE TYPE> (optional) -g <Docker registry certificates directory path> (optional)"
           exit 0
           ;;
     esac
 done
-if ! $rOptionFlag || ! $nOptionFlag || ! $dOptionFlag || ! $bOptionFlag ;
+if ! $rOptionFlag || ! $nOptionFlag || ! $dOptionFlag || ! $bOptionFlag || ! $cOptionFlag ;
 then
-  echo "Usage: $(basename $0) -r <AWS region> -n <AMI NAME> -d <DOCKER IMAGE> -o <DOCKER OPTS> (optional) -b <Build UUID> -s <Subnet_ID> (optional) -v <VPC ID> (optional) -i <INSTANCE TYPE> (optional) -g <Docker registry certificates directory path> (optional)"
+  echo "Usage: $(basename $0) -r <AWS region> -n <AMI NAME> -c <Cloud config template file path> -d <DOCKER IMAGE> -o <DOCKER OPTS> (optional) -b <Build UUID> -s <Subnet_ID> (optional) -v <VPC ID> (optional) -i <INSTANCE TYPE> (optional) -g <Docker registry certificates directory path> (optional)"
   exit 0;
 fi
 
@@ -72,16 +78,16 @@ AMI_ID=$(curl -s $url)
 ## docker image and opts
 ## in cloud config file
 ######################
-files=$(grep -s -l -e \<#DOCKER_IMAGE#\> -e \<#DOCKER_OPTS#\> -r "cloud-config/cloud-config.tmpl.yaml")
-echo ${files[@]}
+files=$(grep -s -l -e \<#DOCKER_IMAGE#\> -e \<#DOCKER_OPTS#\> -r "$CLOUD_CONFIG_TMPL")
+CLOUD_CONFIG_FILE=""
 if [ "X$files" != "X" ];
 then
   for f in $files
   do
-    newFile="${f%%.tmpl*}.yaml"
-    cp $f $newFile
-    perl -p -i -e "s|<#DOCKER_IMAGE#>|$DOCKER_IMAGE|g" $newFile
-    perl -p -i -e "s|<#DOCKER_OPTS#>|$DOCKER_OPTS|g" $newFile
+    CLOUD_CONFIG_FILE="${f%%.tmpl*}.yaml"
+    cp $f $CLOUD_CONFIG_FILE
+    perl -p -i -e "s|<#DOCKER_IMAGE#>|$DOCKER_IMAGE|g" $CLOUD_CONFIG_FILE
+    perl -p -i -e "s|<#DOCKER_OPTS#>|$DOCKER_OPTS|g" $CLOUD_CONFIG_FILE
   done
 fi
 
@@ -95,4 +101,5 @@ packer build \
     -var "ami_name=$AMI_NAME" \
     -var "docker_registry_crts_dir=$DOCKER_REGISTRY_CRTS_DIR" \
     -var "build_uuid=$BUILD_UUID" \
+    -var "cloud_config_file=$CLOUD_CONFIG_FILE" \
     templates/amibaker.json 2>&1 | sudo tee output.txt

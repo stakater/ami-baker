@@ -1,4 +1,11 @@
 #cloud-config
+#####################################
+# Sample cloud config template file
+#
+# Includes templatized variables for
+# docker image and docker options
+#####################################
+
 coreos:
   etcd2:
     # generate a new token for each unique cluster from https://discovery.etcd.io/new?size=3
