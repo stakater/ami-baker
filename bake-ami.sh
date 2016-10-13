@@ -78,18 +78,12 @@ AMI_ID=$(curl -s $url)
 ## docker image and opts
 ## in cloud config file
 ######################
-files=$(grep -s -l -e \<#DOCKER_IMAGE#\> -e \<#DOCKER_OPTS#\> -r "$CLOUD_CONFIG_TMPL")
-CLOUD_CONFIG_FILE=""
-if [ "X$files" != "X" ];
-then
-  for f in $files
-  do
-    CLOUD_CONFIG_FILE="${f%%.tmpl*}.yaml"
-    cp $f $CLOUD_CONFIG_FILE
-    perl -p -i -e "s|<#DOCKER_IMAGE#>|$DOCKER_IMAGE|g" $CLOUD_CONFIG_FILE
-    perl -p -i -e "s|<#DOCKER_OPTS#>|$DOCKER_OPTS|g" $CLOUD_CONFIG_FILE
-  done
-fi
+# create file from template
+CLOUD_CONFIG_FILE="${CLOUD_CONFIG_TMPL%%.tmpl*}.yaml"
+cp $CLOUD_CONFIG_TMPL $CLOUD_CONFIG_FILE
+# replace in file
+perl -p -i -e "s|<#DOCKER_IMAGE#>|$DOCKER_IMAGE|g" $CLOUD_CONFIG_FILE
+perl -p -i -e "s|<#DOCKER_OPTS#>|$DOCKER_OPTS|g" $CLOUD_CONFIG_FILE
 
 # Run packer
 packer build \
