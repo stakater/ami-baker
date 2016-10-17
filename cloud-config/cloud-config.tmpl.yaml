@@ -36,7 +36,6 @@ coreos:
         [Service]
         TimeoutStartSec=0
         ExecStartPre=-/usr/bin/docker rm %n
-        ExecStartPre=/usr/bin/docker pull <#DOCKER_IMAGE#>
         ExecStart=/usr/bin/docker run --rm --name %n <#DOCKER_OPTS#> <#DOCKER_IMAGE#>
         ExecStop=/usr/bin/docker stop %n
 
