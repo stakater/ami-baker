@@ -24,7 +24,7 @@ bOptionFlag=false;
 cOptionFlag=false;
 volOptionCnt=0;
 # Get options from the command line
-while getopts ":r:n:d:o:i:s:v:g:b:c:e:z:l:x" OPTION
+while getopts ":r:n:d:o:i:s:v:g:b:c:e:z:l:x:" OPTION
 do
     case $OPTION in
         r)
@@ -87,7 +87,7 @@ done
 echo "Volume opt cnt:$volOptionCnt
 Dataebs: $DATA_EBS_DEVICE_NAME - $DATA_EBS_VOL_SIZE
 logsebs: $LOGS_EBS_DEVCE_NAME - $LOGS_EBS_VOL_SIZE";
-if [ ! $rOptionFlag || ! $nOptionFlag || ! $dOptionFlag || ! $bOptionFlag || ! $cOptionFlag ] || [[ $volOptionCnt -le 4 ]];
+if [ ! $rOptionFlag || ! $nOptionFlag || ! $dOptionFlag || ! $bOptionFlag || ! $cOptionFlag ] || [[ "$volOptionCnt" -le 4 ]];
 then
   echo "Usage: $(basename $0) -r <AWS region> -n <AMI NAME> -c <Cloud config template file path> -d <DOCKER IMAGE> -o <DOCKER OPTS> (optional) -b <Build UUID> -s <Subnet_ID> (optional) -v <VPC ID> (optional) -i <INSTANCE TYPE> (optional) -g <Docker registry certificates directory path> (optional)  -e <EBS data volume device name> -z <EBS data volume device size> -l <EBS logs volume device name> -x <EBS logs volume size>"
   exit 0;
