@@ -9,14 +9,22 @@ DOCKER_OPTS=""
 DOCKER_REGISTRY_DIR=""
 BUILD_UUID=""
 CLOUD_CONFIG_TMPL=""
+
+#EBS Vars
+DATA_EBS_DEVICE_NAME=""
+DATA_EBS_VOL_SIZE=""
+LOGS_EBS_DEVCE_NAME=""
+LOGS_EBS_VOL_SIZE=""
+
 # Flags to make sure all options are given
 rOptionFlag=false;
 nOptionFlag=false;
 dOptionFlag=false;
 bOptionFlag=false;
 cOptionFlag=false;
+volOptionCnt=0;
 # Get options from the command line
-while getopts ":r:n:d:o:i:s:v:g:b:c:" OPTION
+while getopts ":r:n:d:o:i:s:v:g:b:c:e:z:l:x" OPTION
 do
     case $OPTION in
         r)
@@ -54,15 +62,31 @@ do
           cOptionFlag=true
           CLOUD_CONFIG_TMPL=$OPTARG
           ;;
+        e)
+          volOptionCnt=$((volOptionCnt+1));
+          DATA_EBS_DEVICE_NAME=$OPTARG
+          ;;
+        z)
+          volOptionCnt=$((volOptionCnt+1));
+          DATA_EBS_VOL_SIZE=$OPTARG
+          ;;
+        l)
+          volOptionCnt=$((volOptionCnt+1));
+          LOGS_EBS_DEVCE_NAME=$OPTARG
+          ;;
+        x)
+          volOptionCnt=$((volOptionCnt+1));
+          LOGS_EBS_VOL_SIZE=$OPTARG
+          ;;
         *)
-          echo "Usage: $(basename $0) -r <AWS region> -n <AMI NAME> -c <Cloud config template file path> -d <DOCKER IMAGE> -o <DOCKER OPTS> (optional) -b <Build UUID> -s <Subnet ID> (optional) -v <VPC ID> (optional) -i <INSTANCE TYPE> (optional) -g <Docker registry certificates directory path> (optional)"
+          echo "Usage: $(basename $0) -r <AWS region> -n <AMI NAME> -c <Cloud config template file path> -d <DOCKER IMAGE> -o <DOCKER OPTS> (optional) -b <Build UUID> -s <Subnet ID> (optional) -v <VPC ID> (optional) -i <INSTANCE TYPE> (optional) -g <Docker registry certificates directory path> (optional) -e <EBS data volume device name> -z <EBS data volume device size> -l <EBS logs volume device name> -x <EBS logs volume size>"
           exit 0
           ;;
     esac
 done
-if ! $rOptionFlag || ! $nOptionFlag || ! $dOptionFlag || ! $bOptionFlag || ! $cOptionFlag ;
+if [ ! $rOptionFlag || ! $nOptionFlag || ! $dOptionFlag || ! $bOptionFlag || ! $cOptionFlag ] || [ $volOptionCnt -le 4];
 then
-  echo "Usage: $(basename $0) -r <AWS region> -n <AMI NAME> -c <Cloud config template file path> -d <DOCKER IMAGE> -o <DOCKER OPTS> (optional) -b <Build UUID> -s <Subnet_ID> (optional) -v <VPC ID> (optional) -i <INSTANCE TYPE> (optional) -g <Docker registry certificates directory path> (optional)"
+  echo "Usage: $(basename $0) -r <AWS region> -n <AMI NAME> -c <Cloud config template file path> -d <DOCKER IMAGE> -o <DOCKER OPTS> (optional) -b <Build UUID> -s <Subnet_ID> (optional) -v <VPC ID> (optional) -i <INSTANCE TYPE> (optional) -g <Docker registry certificates directory path> (optional)  -e <EBS data volume device name> -z <EBS data volume device size> -l <EBS logs volume device name> -x <EBS logs volume size>"
   exit 0;
 fi
 
@@ -97,4 +121,8 @@ packer build \
     -var "build_uuid=$BUILD_UUID" \
     -var "cloud_config_file=$CLOUD_CONFIG_FILE" \
     -var "app_docker_image=$DOCKER_IMAGE" \
+    -var "data_ebs_device_name=$DATA_EBS_DEVICE_NAME" \
+    -var "data_ebs_vol_size=$DATA_EBS_VOL_SIZE" \
+    -var "logs_ebs_device_name=$LOGS_EBS_DEVCE_NAME" \
+    -var "logs_ebs_vol_size=$LOGS_EBS_VOL_SIZE" \
     templates/amibaker.json 2>&1 | sudo tee output.txt

@@ -9,7 +9,11 @@
     "docker_registry_crts_dir":"",
     "build_uuid":"",
     "cloud_config_file":"",
-    "app_docker_image":""
+    "app_docker_image":"",
+    "data_ebs_device_name":"",
+    "data_ebs_vol_size":"",
+    "logs_ebs_device_name":"",
+    "logs_ebs_vol_size":""
   },
   "builders": [{
     "type": "amazon-ebs",
@@ -22,7 +26,19 @@
     "ami_name": "{{user `ami_name`}}",
     "tags": {
       "BuildUUID": "{{user `build_uuid`}}"
-    }
+    },
+    "ami_block_device_mappings": [
+      {
+        "device_name": "{{user `data_ebs_device_name`}}",
+        "volume_size": "{{user `data_ebs_vol_size`}}",
+        "volume_type": "gp2"
+      },
+      {
+        "device_name": "{{user `logs_ebs_device_name`}}",
+        "volume_size": "{{user `logs_ebs_vol_size`}}",
+        "volume_type": "gp2"
+      }
+    ]
   }],
 
   "provisioners": [{
