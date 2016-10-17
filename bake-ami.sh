@@ -96,4 +96,5 @@ packer build \
     -var "docker_registry_crts_dir=$DOCKER_REGISTRY_CRTS_DIR" \
     -var "build_uuid=$BUILD_UUID" \
     -var "cloud_config_file=$CLOUD_CONFIG_FILE" \
+    -var "app_docker_image=$DOCKER_IMAGE" \
     templates/amibaker.json 2>&1 | sudo tee output.txt

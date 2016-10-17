@@ -8,7 +8,8 @@
     "vpc_id":"",
     "docker_registry_crts_dir":"",
     "build_uuid":"",
-    "cloud_config_file":""
+    "cloud_config_file":"",
+    "app_docker_image":""
   },
   "builders": [{
     "type": "amazon-ebs",
@@ -48,6 +49,7 @@
     "type":"shell",
     "inline": [
       "sudo cp -f /baker-data/cloud-config.yaml /usr/share/oem/cloud-config.yml",
+      "sudo docker pull {{user `app_docker_image`}}",
       "sudo coreos-cloudinit --from-file=/usr/share/oem/cloud-config.yml"
     ]
   }]
