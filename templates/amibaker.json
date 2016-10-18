@@ -27,7 +27,7 @@
     "tags": {
       "BuildUUID": "{{user `build_uuid`}}"
     },
-    "ami_block_device_mappings": [
+    "launch_block_device_mappings": [
       {
         "device_name": "{{user `data_ebs_device_name`}}",
         "volume_size": "{{user `data_ebs_vol_size`}}",
