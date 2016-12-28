@@ -98,7 +98,7 @@ do
           DATA_EBS_DEVICE_NAME=$OPTARG
           ;;
         z)
-          volOptionCnt=$((volOptionCnt+1));
+          volOptionCnt=$((volOptionCnt-1));
           DATA_EBS_VOL_SIZE=$OPTARG
           ;;
         l)
@@ -106,7 +106,7 @@ do
           LOGS_EBS_DEVCE_NAME=$OPTARG
           ;;
         x)
-          volOptionCnt=$((volOptionCnt+1));
+          volOptionCnt=$((volOptionCnt-1));
           LOGS_EBS_VOL_SIZE=$OPTARG
           ;;
         *)
@@ -115,7 +115,7 @@ do
           ;;
     esac
 done
-if [[ ! $rOptionFlag || ! $nOptionFlag || ! $dOptionFlag || ! $bOptionFlag || ! $cOptionFlag ]] || [[ "$volOptionCnt" -lt  "4" ]] ;
+if [[ ! $rOptionFlag || ! $nOptionFlag || ! $dOptionFlag || ! $bOptionFlag || ! $cOptionFlag ]] || [[ "$volOptionCnt" -ne  0 ]] ;
 then
   echo "Usage: $(basename $0) -r <AWS region> -n <AMI NAME> -c <Cloud config template file path> -d <DOCKER IMAGE> -o <DOCKER OPTS> (optional) -b <Build UUID> -s <Subnet_ID> (optional) -v <VPC ID> (optional) -i <INSTANCE TYPE> (optional) -g <Docker registry certificates directory path> (optional)  -e <EBS data volume device name> -z <EBS data volume device size> -l <EBS logs volume device name> -x <EBS logs volume size>"
   exit 0;
@@ -137,10 +137,32 @@ AMI_ID=$(curl -s $url)
 CLOUD_CONFIG_FILE="${CLOUD_CONFIG_TMPL%%.tmpl*}.yaml"
 cp $CLOUD_CONFIG_TMPL $CLOUD_CONFIG_FILE
 # replace in file
-perl -p -i -e "s|<#DOCKER_IMAGE#>|$DOCKER_IMAGE|g" $CLOUD_CONFIG_FILE
+# perl -p -i -e "s|<#DOCKER_IMAGE#>|$DOCKER_IMAGE|g" $CLOUD_CONFIG_FILE
 perl -p -i -e "s|<#DOCKER_OPTS#>|$DOCKER_OPTS|g" $CLOUD_CONFIG_FILE
 
-# Run packer
+# create file from template
+PACKER_TEMPLATE="templates/amibaker.json.tmpl"
+PACKER_TEMPLATE_FILE="${PACKER_TEMPLATE%%.tmpl*}"
+
+cp $PACKER_TEMPLATE $PACKER_TEMPLATE_FILE
+# replace in file
+if [ "$DATA_EBS_DEVICE_NAME" == "" ]
+then
+    EBS_DATA=""
+else
+    EBS_DATA="{
+        \\\"device_name\\\": \\\"{{user \\\`data_ebs_device_name\\\`}}\\\",
+        \\\"volume_size\\\": \\\"{{user \\\`data_ebs_vol_size\\\`}}\\\",
+        \\\"volume_type\\\": \\\"gp2\\\"
+      },
+      {
+        \\\"device_name\\\": \\\"{{user \\\`logs_ebs_device_name\\\`}}\\\",
+        \\\"volume_size\\\": \\\"{{user \\\`logs_ebs_vol_size\\\`}}\\\",
+        \\\"volume_type\\\": \\\"gp2\\\"
+      }"
+fi
+
+perl -p -i -e "s|<#EBS_OPTIONS#>|$EBS_DATA|g" $PACKER_TEMPLATE_FILE
 packer build \
     -var "aws_region=$AWS_REGION" \
     -var "subnet_id=$SUBNET_ID" \

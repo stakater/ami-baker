@@ -27,18 +27,7 @@
     "tags": {
       "BuildUUID": "{{user `build_uuid`}}"
     },
-    "launch_block_device_mappings": [
-      {
-        "device_name": "{{user `data_ebs_device_name`}}",
-        "volume_size": "{{user `data_ebs_vol_size`}}",
-        "volume_type": "gp2"
-      },
-      {
-        "device_name": "{{user `logs_ebs_device_name`}}",
-        "volume_size": "{{user `logs_ebs_vol_size`}}",
-        "volume_type": "gp2"
-      }
-    ]
+    "launch_block_device_mappings": [<#EBS_OPTIONS#>]
   }],
 
   "provisioners": [{
