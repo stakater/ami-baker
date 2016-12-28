@@ -137,7 +137,7 @@ AMI_ID=$(curl -s $url)
 CLOUD_CONFIG_FILE="${CLOUD_CONFIG_TMPL%%.tmpl*}.yaml"
 cp $CLOUD_CONFIG_TMPL $CLOUD_CONFIG_FILE
 # replace in file
-# perl -p -i -e "s|<#DOCKER_IMAGE#>|$DOCKER_IMAGE|g" $CLOUD_CONFIG_FILE
+perl -p -i -e "s|<#DOCKER_IMAGE#>|$DOCKER_IMAGE|g" $CLOUD_CONFIG_FILE
 perl -p -i -e "s|<#DOCKER_OPTS#>|$DOCKER_OPTS|g" $CLOUD_CONFIG_FILE
 
 # create file from template
@@ -163,6 +163,8 @@ else
 fi
 
 perl -p -i -e "s|<#EBS_OPTIONS#>|$EBS_DATA|g" $PACKER_TEMPLATE_FILE
+
+# Run packer
 packer build \
     -var "aws_region=$AWS_REGION" \
     -var "subnet_id=$SUBNET_ID" \
