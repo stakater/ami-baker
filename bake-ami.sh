@@ -179,5 +179,5 @@ else
       -var "data_ebs_vol_size=$DATA_EBS_VOL_SIZE" \
       -var "logs_ebs_device_name=$LOGS_EBS_DEVCE_NAME" \
       -var "logs_ebs_vol_size=$LOGS_EBS_VOL_SIZE" \
-      templates/amibaker.json 2>&1 | sudo tee output.txt
+      templates/amibaker-ebs.json 2>&1 | sudo tee output.txt
 fi
