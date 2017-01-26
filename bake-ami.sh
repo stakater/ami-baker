@@ -147,7 +147,7 @@ NC='\033[0m' # No Color
 # If all volume variables are specified only then run packer with EBS attached
 if [[ "$volOptionCnt" -lt  "4" ]];
 then
-  echo "${CYAN}All variables for extra EBS not specified, Creating AMI without EBS attached${NC}"
+  echo -e "${CYAN}All variables for extra EBS not specified, Creating AMI without EBS attached${NC}"
   # Run packer without EBS attached
   packer build \
       -var "aws_region=$AWS_REGION" \
@@ -162,7 +162,7 @@ then
       -var "app_docker_image=$DOCKER_IMAGE" \
       templates/amibaker.json 2>&1 | sudo tee output.txt
 else
-  echo "${CYAN}All variables for extra EBS specified, Creating AMI with EBS attached${NC}"
+  echo -e "${CYAN}All variables for extra EBS specified, Creating AMI with EBS attached${NC}"
   # Run packer with EBS attached
   packer build \
       -var "aws_region=$AWS_REGION" \
