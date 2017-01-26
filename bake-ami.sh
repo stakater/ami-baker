@@ -94,19 +94,19 @@ do
           CLOUD_CONFIG_TMPL=$OPTARG
           ;;
         e)
-          volOptionCnt=$((volOptionCnt+1));
+          if [ ! -z "$OPTARG" ]; then volOptionCnt=$((volOptionCnt+1)); fi #if not empty string, then set flag true
           DATA_EBS_DEVICE_NAME=$OPTARG
           ;;
         z)
-          volOptionCnt=$((volOptionCnt+1));
+          if [ ! -z "$OPTARG" ]; then volOptionCnt=$((volOptionCnt+1)); fi #if not empty string, then set flag true
           DATA_EBS_VOL_SIZE=$OPTARG
           ;;
         l)
-          volOptionCnt=$((volOptionCnt+1));
+          if [ ! -z "$OPTARG" ]; then volOptionCnt=$((volOptionCnt+1)); fi #if not empty string, then set flag true
           LOGS_EBS_DEVCE_NAME=$OPTARG
           ;;
         x)
-          volOptionCnt=$((volOptionCnt+1));
+          if [ ! -z "$OPTARG" ]; then volOptionCnt=$((volOptionCnt+1)); fi #if not empty string, then set flag true
           LOGS_EBS_VOL_SIZE=$OPTARG
           ;;
         *)
@@ -140,10 +140,14 @@ cp $CLOUD_CONFIG_TMPL $CLOUD_CONFIG_FILE
 perl -p -i -e "s|<#DOCKER_IMAGE#>|$DOCKER_IMAGE|g" $CLOUD_CONFIG_FILE
 perl -p -i -e "s|<#DOCKER_OPTS#>|$DOCKER_OPTS|g" $CLOUD_CONFIG_FILE
 
+# Bash output colors
+CYAN='\033[0;36m'
+NC='\033[0m' # No Color
+
 # If all volume variables are specified only then run packer with EBS attached
 if [[ "$volOptionCnt" -lt  "4" ]];
 then
-  echo "All variables for extra EBS not specified, Creating AMI without EBS attached"
+  echo "${CYAN}All variables for extra EBS not specified, Creating AMI without EBS attached${NC}"
   # Run packer without EBS attached
   packer build \
       -var "aws_region=$AWS_REGION" \
@@ -158,7 +162,7 @@ then
       -var "app_docker_image=$DOCKER_IMAGE" \
       templates/amibaker.json 2>&1 | sudo tee output.txt
 else
-  echo "All variables for extra EBS specified, Creating AMI with EBS attached"
+  echo "${CYAN}All variables for extra EBS specified, Creating AMI with EBS attached${NC}"
   # Run packer with EBS attached
   packer build \
       -var "aws_region=$AWS_REGION" \
