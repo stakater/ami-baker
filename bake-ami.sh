@@ -40,7 +40,7 @@ DOCKER_OPTS=""
 DOCKER_REGISTRY_DIR=""
 BUILD_UUID=""
 CLOUD_CONFIG_TMPL=""
-
+EXTRA_CLOUDCONFIG_UNITS=""
 #EBS Vars
 DATA_EBS_DEVICE_NAME=""
 DATA_EBS_VOL_SIZE=""
@@ -55,7 +55,7 @@ bOptionFlag=false;
 cOptionFlag=false;
 volOptionCnt=0;
 # Get options from the command line
-while getopts ":r:n:d:o:i:s:v:g:b:c:e:z:l:x:" OPTION
+while getopts ":r:n:d:o:i:s:v:g:b:c:y:e:z:l:x:" OPTION
 do
     case $OPTION in
         r)
@@ -93,6 +93,9 @@ do
           cOptionFlag=true
           CLOUD_CONFIG_TMPL=$OPTARG
           ;;
+        y)
+          EXTRA_CLOUDCONFIG_UNITS=$OPTARG
+          ;;
         e)
           if [ ! -z "$OPTARG" ]; then volOptionCnt=$((volOptionCnt+1)); fi #if not empty string, then set flag true
           DATA_EBS_DEVICE_NAME=$OPTARG
@@ -128,17 +131,17 @@ url=`printf "http://%s.release.core-os.net/amd64-usr/current/coreos_production_a
 
 AMI_ID=$(curl -s $url)
 
-######################
-## Replace values for
-## docker image and opts
-## in cloud config file
-######################
+#############################################################
+## Replace values for docker image, docker opts
+## and/or extra cloud-config units in cloud config file
+#############################################################
 # create file from template
 CLOUD_CONFIG_FILE="${CLOUD_CONFIG_TMPL%%.tmpl*}.yaml"
 cp $CLOUD_CONFIG_TMPL $CLOUD_CONFIG_FILE
 # replace in file
 perl -p -i -e "s|<#DOCKER_IMAGE#>|$DOCKER_IMAGE|g" $CLOUD_CONFIG_FILE
 perl -p -i -e "s|<#DOCKER_OPTS#>|$DOCKER_OPTS|g" $CLOUD_CONFIG_FILE
+perl -p -i -e "s|<#EXTRA_CLOUDCONFIG_UNITS#>|$EXTRA_CLOUDCONFIG_UNITS|g" $CLOUD_CONFIG_FILE
 
 # Bash output colors
 CYAN='\033[0;36m'
