@@ -110,14 +110,14 @@ do
           LOGS_EBS_VOL_SIZE=$OPTARG
           ;;
         *)
-          echo "Usage: $(basename $0) -r <AWS region> -n <AMI NAME> -c <Cloud config template file path> -d <DOCKER IMAGE> -o <DOCKER OPTS> (optional) -b <Build UUID> -s <Subnet ID> (optional) -v <VPC ID> (optional) -i <INSTANCE TYPE> (optional) -g <Docker registry certificates directory path> (optional) -e <EBS data volume device name> -z <EBS data volume device size> -l <EBS logs volume device name> -x <EBS logs volume size>"
+          echo "Usage: $(basename $0) -r <AWS region> -n <AMI NAME> -c <Cloud config template file path> -d <DOCKER IMAGE> -o <DOCKER OPTS> (optional) -b <Build UUID> -s <Subnet ID> (optional) -v <VPC ID> (optional) -i <INSTANCE TYPE> (optional) -g <Docker registry certificates directory path> (optional) -e <EBS data volume device name>(optional) -z <EBS data volume device size>(optional)  -l <EBS logs volume device name>(optional)  -x <EBS logs volume size>(optional) "
           exit 0
           ;;
     esac
 done
-if [[ ! $rOptionFlag || ! $nOptionFlag || ! $dOptionFlag || ! $bOptionFlag || ! $cOptionFlag ]] || [[ "$volOptionCnt" -lt  "4" ]] ;
+if [[ ! $rOptionFlag || ! $nOptionFlag || ! $dOptionFlag || ! $bOptionFlag || ! $cOptionFlag ]] ;
 then
-  echo "Usage: $(basename $0) -r <AWS region> -n <AMI NAME> -c <Cloud config template file path> -d <DOCKER IMAGE> -o <DOCKER OPTS> (optional) -b <Build UUID> -s <Subnet_ID> (optional) -v <VPC ID> (optional) -i <INSTANCE TYPE> (optional) -g <Docker registry certificates directory path> (optional)  -e <EBS data volume device name> -z <EBS data volume device size> -l <EBS logs volume device name> -x <EBS logs volume size>"
+  echo "Usage: $(basename $0) -r <AWS region> -n <AMI NAME> -c <Cloud config template file path> -d <DOCKER IMAGE> -o <DOCKER OPTS> (optional) -b <Build UUID> -s <Subnet_ID> (optional) -v <VPC ID> (optional) -i <INSTANCE TYPE> (optional) -g <Docker registry certificates directory path> (optional)  -e <EBS data volume device name>(optional)  -z <EBS data volume device size>(optional)  -l <EBS logs volume device name>(optional)  -x <EBS logs volume size>(optional) "
   exit 0;
 fi
 
@@ -140,20 +140,40 @@ cp $CLOUD_CONFIG_TMPL $CLOUD_CONFIG_FILE
 perl -p -i -e "s|<#DOCKER_IMAGE#>|$DOCKER_IMAGE|g" $CLOUD_CONFIG_FILE
 perl -p -i -e "s|<#DOCKER_OPTS#>|$DOCKER_OPTS|g" $CLOUD_CONFIG_FILE
 
-# Run packer
-packer build \
-    -var "aws_region=$AWS_REGION" \
-    -var "subnet_id=$SUBNET_ID" \
-    -var "vpc_id=$VPC_ID" \
-    -var "source_ami=$AMI_ID" \
-    -var "instance_type=$INSTANCE_TYPE" \
-    -var "ami_name=$AMI_NAME" \
-    -var "docker_registry_crts_dir=$DOCKER_REGISTRY_CRTS_DIR" \
-    -var "build_uuid=$BUILD_UUID" \
-    -var "cloud_config_file=$CLOUD_CONFIG_FILE" \
-    -var "app_docker_image=$DOCKER_IMAGE" \
-    -var "data_ebs_device_name=$DATA_EBS_DEVICE_NAME" \
-    -var "data_ebs_vol_size=$DATA_EBS_VOL_SIZE" \
-    -var "logs_ebs_device_name=$LOGS_EBS_DEVCE_NAME" \
-    -var "logs_ebs_vol_size=$LOGS_EBS_VOL_SIZE" \
-    templates/amibaker.json 2>&1 | sudo tee output.txt
+# If all volume variables are specified only then run packer with EBS attached
+if [[ "$volOptionCnt" -lt  "4" ]];
+then
+  echo "All variables for extra EBS not specified, Creating AMI without EBS attached"
+  # Run packer without EBS attached
+  packer build \
+      -var "aws_region=$AWS_REGION" \
+      -var "subnet_id=$SUBNET_ID" \
+      -var "vpc_id=$VPC_ID" \
+      -var "source_ami=$AMI_ID" \
+      -var "instance_type=$INSTANCE_TYPE" \
+      -var "ami_name=$AMI_NAME" \
+      -var "docker_registry_crts_dir=$DOCKER_REGISTRY_CRTS_DIR" \
+      -var "build_uuid=$BUILD_UUID" \
+      -var "cloud_config_file=$CLOUD_CONFIG_FILE" \
+      -var "app_docker_image=$DOCKER_IMAGE" \
+      templates/amibaker.json 2>&1 | sudo tee output.txt
+else
+  echo "All variables for extra EBS specified, Creating AMI with EBS attached"
+  # Run packer with EBS attached
+  packer build \
+      -var "aws_region=$AWS_REGION" \
+      -var "subnet_id=$SUBNET_ID" \
+      -var "vpc_id=$VPC_ID" \
+      -var "source_ami=$AMI_ID" \
+      -var "instance_type=$INSTANCE_TYPE" \
+      -var "ami_name=$AMI_NAME" \
+      -var "docker_registry_crts_dir=$DOCKER_REGISTRY_CRTS_DIR" \
+      -var "build_uuid=$BUILD_UUID" \
+      -var "cloud_config_file=$CLOUD_CONFIG_FILE" \
+      -var "app_docker_image=$DOCKER_IMAGE" \
+      -var "data_ebs_device_name=$DATA_EBS_DEVICE_NAME" \
+      -var "data_ebs_vol_size=$DATA_EBS_VOL_SIZE" \
+      -var "logs_ebs_device_name=$LOGS_EBS_DEVCE_NAME" \
+      -var "logs_ebs_vol_size=$LOGS_EBS_VOL_SIZE" \
+      templates/amibaker.json 2>&1 | sudo tee output.txt
+fi
