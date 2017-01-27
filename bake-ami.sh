@@ -114,14 +114,14 @@ do
           ;;
         *)
           echo "Usage: $(basename $0) -r <AWS region> -n <AMI NAME> -c <Cloud config template file path> -d <DOCKER IMAGE> -o <DOCKER OPTS> (optional) -b <Build UUID> -s <Subnet ID> (optional) -v <VPC ID> (optional) -i <INSTANCE TYPE> (optional) -g <Docker registry certificates directory path> (optional) -e <EBS data volume device name>(optional) -z <EBS data volume device size>(optional)  -l <EBS logs volume device name>(optional)  -x <EBS logs volume size>(optional) "
-          exit 0
+          exit 1
           ;;
     esac
 done
 if [[ ! $rOptionFlag || ! $nOptionFlag || ! $dOptionFlag || ! $bOptionFlag || ! $cOptionFlag ]] ;
 then
   echo "Usage: $(basename $0) -r <AWS region> -n <AMI NAME> -c <Cloud config template file path> -d <DOCKER IMAGE> -o <DOCKER OPTS> (optional) -b <Build UUID> -s <Subnet_ID> (optional) -v <VPC ID> (optional) -i <INSTANCE TYPE> (optional) -g <Docker registry certificates directory path> (optional)  -e <EBS data volume device name>(optional)  -z <EBS data volume device size>(optional)  -l <EBS logs volume device name>(optional)  -x <EBS logs volume size>(optional) "
-  exit 0;
+  exit 1;
 fi
 
 # Fetch core-os ami id
@@ -141,7 +141,7 @@ cp $CLOUD_CONFIG_TMPL $CLOUD_CONFIG_FILE
 # replace in file
 perl -p -i -e "s|<#DOCKER_IMAGE#>|$DOCKER_IMAGE|g" $CLOUD_CONFIG_FILE
 perl -p -i -e "s|<#DOCKER_OPTS#>|$DOCKER_OPTS|g" $CLOUD_CONFIG_FILE
-perl -p -i -e "s|<#EXTRA_CLOUDCONFIG_UNITS#>|$EXTRA_CLOUDCONFIG_UNITS|g" $CLOUD_CONFIG_FILE
+perl -p -i -e 's|<#EXTRA_CLOUDCONFIG_UNITS#>|$EXTRA_CLOUDCONFIG_UNITS|g' $CLOUD_CONFIG_FILE
 
 # Bash output colors
 CYAN='\033[0;36m'
