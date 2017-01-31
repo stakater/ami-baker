@@ -49,6 +49,7 @@
     "type":"shell",
     "inline": [
       "sudo cp -f /baker-data/cloud-config.yaml /usr/share/oem/cloud-config.yml",
+      "echo \"{{user `app_docker_image`}}\"",
       "sudo docker pull {{user `app_docker_image`}}",
       "sudo coreos-cloudinit --from-file=/usr/share/oem/cloud-config.yml"
     ]
