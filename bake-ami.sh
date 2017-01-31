@@ -148,7 +148,13 @@ AMI_ID=$(curl -s $url)
 # create file from template
 CLOUD_CONFIG_FILE="${CLOUD_CONFIG_TMPL%%.tmpl*}.yaml"
 # Merged cloud-config file and create .yaml from .tmpl.yampl
-python3 scripts/merge-extra-cloud-config-units.py -e "${EXTRA_CLOUDCONFIG_UNITS}" -t "${CLOUD_CONFIG_TMPL}" -c "${CLOUD_CONFIG_FILE}"
+
+if [[ ! -z "${EXTRA_CLOUDCONFIG_UNITS}" ]];
+then
+  python3 scripts/merge-extra-cloud-config-units.py -e "${EXTRA_CLOUDCONFIG_UNITS}" -t "${CLOUD_CONFIG_TMPL}" -c "${CLOUD_CONFIG_FILE}"
+else
+  cp $CLOUD_CONFIG_TMPL $CLOUD_CONFIG_FILE;
+fi
 
 # replace in file
 perl -p -i -e "s|<#DOCKER_IMAGE#>|$DOCKER_IMAGE|g" $CLOUD_CONFIG_FILE
