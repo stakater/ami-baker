@@ -137,11 +137,12 @@ AMI_ID=$(curl -s $url)
 #############################################################
 # create file from template
 CLOUD_CONFIG_FILE="${CLOUD_CONFIG_TMPL%%.tmpl*}.yaml"
-cp $CLOUD_CONFIG_TMPL $CLOUD_CONFIG_FILE
+# Merged cloud-config file and create .yaml from .tmpl.yampl
+python3 scripts/merge-extra-cloud-config-units.py -e "${EXTRA_CLOUDCONFIG_UNITS}" -t "${CLOUD_CONFIG_TMPL}" -c "${CLOUD_CONFIG_FILE}"
+
 # replace in file
 perl -p -i -e "s|<#DOCKER_IMAGE#>|$DOCKER_IMAGE|g" $CLOUD_CONFIG_FILE
 perl -p -i -e "s|<#DOCKER_OPTS#>|$DOCKER_OPTS|g" $CLOUD_CONFIG_FILE
-perl -p -i -e 's|<#EXTRA_CLOUDCONFIG_UNITS#>|$EXTRA_CLOUDCONFIG_UNITS|g' $CLOUD_CONFIG_FILE
 
 # Bash output colors
 CYAN='\033[0;36m'
