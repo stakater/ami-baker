@@ -35,7 +35,10 @@ SUBNET_ID=""
 VPC_ID=""
 AMI_NAME=""
 INSTANCE_TYPE=t2.nano # default value
-DOCKER_IMAGE=""
+
+# If docker image varaible is not set (in case of EXTRA_CLOUDCONFIG_UNITS),
+# set it to base image so that docker pull does not fail
+DOCKER_IMAGE="stakater/base-alpine"
 DOCKER_OPTS=""
 DOCKER_REGISTRY_DIR=""
 BUILD_UUID=""
