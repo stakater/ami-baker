@@ -38,8 +38,8 @@
   },{
     "type":"shell",
     "inline": [
-      "sudo mkdir -p {{user `docker_registry_crts_dir`}}",
-      "sudo cp -f /baker-data/ca.crt {{user `docker_registry_crts_dir`}}/ca.crt"
+      "sudo mkdir -p {{user `docker_registry_crts_dir`}} || true",
+      "sudo cp -f /baker-data/ca.crt {{user `docker_registry_crts_dir`}}/ca.crt || true"
     ]
   },{
     "type": "file",
