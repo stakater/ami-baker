@@ -124,6 +124,13 @@ then
   exit 1;
 fi
 
+# If docker image varaible is not set (in case of EXTRA_CLOUDCONFIG_UNITS),
+# set it to base image so that docker pull does not fail
+if [[ -z $DOCKER_IMAGE ]];
+then
+  DOCKER_IMAGE="stakater/base-alpine"
+fi
+
 # Fetch core-os ami id
 COREOS_UPDATE_CHANNEL=stable;
 VM_TYPE=hvm;
