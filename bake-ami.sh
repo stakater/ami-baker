@@ -77,7 +77,8 @@ do
           DOCKER_OPTS=$OPTARG #optional
           ;;
         i)
-          INSTANCE_TYPE=$OPTARG #optional
+          if [ ! -z "$OPTARG" ]; then INSTANCE_TYPE=$OPTARG; fi #if arg not emtpy then set value
+          # Else use default value
           ;;
         s)
           SUBNET_ID=$OPTARG
