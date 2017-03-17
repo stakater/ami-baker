@@ -38,8 +38,8 @@
   },{
     "type":"shell",
     "inline": [
-      "sudo mkdir -p {{user `docker_registry_crts_dir`}}",
-      "sudo cp -f /baker-data/ca.crt {{user `docker_registry_crts_dir`}}/ca.crt"
+      "sudo mkdir -p {{user `docker_registry_crts_dir`}} || true",
+      "sudo cp -f /baker-data/ca.crt {{user `docker_registry_crts_dir`}}/ca.crt || true"
     ]
   },{
     "type": "file",
@@ -49,6 +49,7 @@
     "type":"shell",
     "inline": [
       "sudo cp -f /baker-data/cloud-config.yaml /usr/share/oem/cloud-config.yml",
+      "echo \"{{user `app_docker_image`}}\"",
       "sudo docker pull {{user `app_docker_image`}}",
       "sudo coreos-cloudinit --from-file=/usr/share/oem/cloud-config.yml"
     ]
